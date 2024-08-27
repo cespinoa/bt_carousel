@@ -7,7 +7,8 @@
 
 ## Description
 
-The `bt-carousel` (Bootstrap Toolbox Carousel) module provides a field formatter for `entity_reference` fields, generating a Bootstrap carousel from the referenced entity's content.
+The `bt-carousel` (Bootstrap Toolbox Carousel) module provides a field formatter for
+`entity_reference` fields, generating a Bootstrap carousel from the referenced entity's content.
 
 ### Features
 
@@ -52,7 +53,8 @@ The `bt-carousel` (Bootstrap Toolbox Carousel) module provides a field formatter
 
 ## Customization
 
-The module allows you to override Twig templates to customize the HTML output of the carousel. Copy the templates from the module to your theme and adjust them as needed.
+The module allows you to override Twig templates to customize the HTML output of the carousel.
+Copy the templates from the module to your theme and adjust them as needed.
 
 ```bash
 themes/custom/my_theme/templates/```
@@ -74,7 +76,8 @@ Contributions, bug reports, and feature requests are welcome on the project page
 
 ## Maintenance
 
-The module is maintained by [Carlos Espino](https://www.drupal.org/u/carlos-espino). You can contact me via the contact form on my Drupal.org profile page.
+The module is maintained by [Carlos Espino](https://www.drupal.org/u/carlos-espino).
+You can contact me via the contact form on my Drupal.org profile page.
 
 
 
