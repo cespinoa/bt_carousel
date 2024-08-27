@@ -1,0 +1,64 @@
+bt_carousel.settings:
+  type: config_object
+  label: 'Bootstrap Toolbox Carousel settings'
+  mapping:
+    selected_library:
+      type: string
+      label: 'Selected library'
+      description: 'The selected JavaScript library for the carousel.'
+
+field.formatter.bt_carousel_field_formatter:
+  type: config_object
+  label: 'Bootstrap Toolbox Carousel Field Formatter settings'
+  mapping:
+    show_indicators:
+      type: boolean
+      label: 'Show indicators'
+      default_value: true
+    show_controls:
+      type: boolean
+      label: 'Show controls'
+      default_value: true
+    show_alt_text:
+      type: boolean
+      label: 'Show alt text'
+      default_value: true
+    show_full_screen:
+      type: boolean
+      label: 'Show full screen'
+      default_value: false
+    interval:
+      type: integer
+      label: 'Interval'
+      description: 'Set the interval in milliseconds between slide transitions.'
+      default_value: 5000
+    image_style:
+      type: string
+      label: 'Image style'
+      default_value: 'thumbnail'
+    view_mode:
+      type: string
+      label: 'View mode'
+      default_value: 'default'
+    use_image_only:
+      type: boolean
+      label: 'Use image only'
+      default_value: false
+
+views.style.bt_carousel_view_style:
+  type: views_style
+  label: 'Bootstrap Toolbox Carousel'
+  mapping:
+    show_indicators:
+      type: boolean
+      label: 'Show indicators'
+      default_value: true
+    show_controls:
+      type: boolean
+      label: 'Show controls'
+      default_value: true
+    interval:
+      type: integer
+      label: 'Interval'
+      description: 'Set the interval in milliseconds between slide transitions.'
+      default_value: 5000

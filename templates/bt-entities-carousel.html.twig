@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Template for the Bootstrap Toolbox Entities Carousel formatter.
+ *
+ * Available variables:
+ * - entities: The entities in the carousel.
+ * - carousel_id: The carousel id.
+ * - settings: Show controls, show indictors, interval, carousel_fade, carousel_dark settings
+ */
+#}
+{% if entities %}
+  <div id="{{ carousel_id }}" class="carousel slide {{ settings.carousel_fade }} {{ settings.carousel_dark }}" data-bs-ride="carousel" data-bs-interval={{ settings.interval }}>
+    
+    
+    
+    <div class="carousel-inner">
+      
+      {% for entity in entities %}
+        <div class="carousel-item{% if loop.first %} active{% endif %}">
+          {{ entity }}
+        </div>
+      {% endfor %}
+      
+    </div>
+
+    {% if settings.show_indicators %}
+      <div class="carousel-indicators">
+        {% for entity in entities %}
+          <button type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide-to="{{ loop.index0 }}"
+            class="{% if loop.first %} active{% endif %} {% if thumbnails %} thumbnail{% endif %}" aria-current="true" aria-label="Slide {{ loop.index0 }}">
+            {% if thumbnails %}
+              <img src="{{ file_url(thumbnails[loop.index0].uri) }}" class="d-block w-100">
+            {% endif %}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    {% if settings.show_controls %}
+      <button class="carousel-control-prev" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    {% endif %}
+    {% if thumbnails %}
+      {{ attach_library('bt_carousel/thumbnails') }}
+      <div class="clearfix w-100 mb-5 pb-5"></div> 
+    {% endif %}        
+  </div>
+  
+{% endif %}

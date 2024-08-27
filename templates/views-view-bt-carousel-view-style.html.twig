@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Template for the Bootstrap Toolbox Carousel view style.
+ *
+ * Available variables:
+ * - view: The view object.
+ * - rows: The view results.
+ * - options: The view style options.
+ */
+#}
+{{ attach_library('bt_carousel/custom-controls') }}
+
+{% set customized_fields = TRUE %}
+
+<div id="{{ carousel_id }}" class="carousel slide {{ fade_effect }} {{ dark_mode }} " data-bs-ride="carousel" data-bs-interval={{ options.interval }}>
+  
+  {% if options.show_indicators %}
+    <div class="carousel-indicators">
+      {% for row in rows %}
+        <button type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %} active{% endif %}" aria-current="true" aria-label="Slide {{ loop.index0 }}"></button>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <div class="carousel-inner">
+    
+    {% for row in rows %}
+
+      <div class="carousel-item{% if loop.first %} active{% endif %}">
+        {% if row_mode == 'entity_node' %}
+          {{ row['#node']|raw }}
+        {% elseif row_mode == 'bt_carousel_row' %}
+            {{ row.image }}
+            <div class="carousel-caption d-none d-md-block">
+              {{ row.title }}
+              {{ row.body }}
+              {{ row.link }}
+            </div>
+        {% elseif row_mode == 'fields' %}
+          {{ row }}
+        {% endif %}
+      </div>
+    {% endfor %}
+    
+  </div>
+  
+  {% if options.show_controls %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  {% endif %}
+      
+</div>

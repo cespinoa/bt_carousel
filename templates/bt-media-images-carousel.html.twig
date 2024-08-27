@@ -1,0 +1,49 @@
+{#
+/**
+ * @file
+ * Template for the Bootstrap Toolbox Entities Carousel formatter.
+ *
+ * Available variables:
+ * - images: The images in the carousel.
+ * - carousel_id: The carousel id.
+ * - settings: Show controls, show indictors, interval settings.
+ */
+#}
+<div id="{{ carousel_id }}" class="carousel slide" data-bs-ride="carousel" data-bs-interval={{ settings.interval }}>
+  
+  {% if settings.show_indicators %}
+    <div class="carousel-indicators">
+      {% for image in images %}
+        <button type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %} active{% endif %}" aria-current="true" aria-label="Slide {{ loop.index0 }}"></button>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <div class="carousel-inner">
+    
+    {% for image in images %}
+    
+      <div class="carousel-item{% if loop.first %} active{% endif %}">
+        <img src="{{ file_url(image.uri) }}" alt="{{ image.alt }}" class="d-block w-100">
+        {% if settings.show_alt_text %}
+          <div class="carousel-caption d-none d-md-block">
+            <p>{{ image.alt }}</p>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    
+  </div>
+  
+  {% if settings.show_controls %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  {% endif %}
+      
+</div>

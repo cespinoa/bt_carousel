@@ -1,0 +1,103 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Boostrap Toolbox Carousel module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function bt_carousel_theme() {
+  return [
+    'bt_media_images_carousel' => [
+      'variables' => [
+        'images' => [],
+        'thumbnails' => [],
+        'carousel_id' => '',
+        'settings' => [],
+      ],
+      'template' => 'bt-media-images-carousel',
+    ],
+    'bt_entities_carousel' => [
+      'variables' => [
+        'entities' => [],
+        'thumbnails' => [],
+        'carousel_id' => '',
+        'settings' => [],
+      ],
+      'template' => 'bt-entities-carousel',
+    ],
+    'bootstrap_toolbox_entities_as_fields_carousel' => [
+      'variables' => [
+        'slides' => [],
+        'thumbnails' => [],
+        'carousel_id' => '',
+        'settings' => [],
+      ],
+      'template' => 'bt-entities-as-fields-carousel',
+    ],
+    'views_view_bt_carousel_view_style' => [
+      'variables' => [
+        'view' => NULL,
+        'rows' => NULL,
+        'options' => NULL,
+      ],
+      'template' => 'views-view-bt-carousel-view-style',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for views-view-bt-carousel-view-style.html.twig template.
+ */
+function template_preprocess_views_view_bt_carousel_view_style(array &$variables): void {
+  $config = \Drupal::config('bt_carousel.settings');
+  $selected_library = $config->get('selected_library');
+  $variables['carousel_id'] = \Drupal\Component\Utility\Html::getId('carousel-' . uniqid());
+  $variables['#attached']['library'][] = 'bt_carousel/bt_carousel';
+
+  $view = $variables['view'];
+  $rows = $variables['rows'];
+
+  if ($view && $view->style_plugin instanceof \Drupal\bt_carousel\Plugin\views\style\BootstrapToolboxCarouselViewStyle) {
+    $variables['options'] = $view->style_plugin->options;
+    $variables['dark_mode'] = $view->style_plugin->options['dark_mode'] ? 'carousel-dark' : '';
+    $variables['fade_effect'] = $view->style_plugin->options['fade_effect'] ? 'carousel-fade' : '';
+  }
+  
+  if($variables['view']->display_handler->getOption('row')['type'] === 'bt_carousel_row'){
+    $variables['row_mode'] = 'bt_carousel_row';
+  } elseif ($variables['view']->display_handler->getOption('row')['type'] === 'entity:node')  {
+    $variables['row_mode'] = 'entity_node';
+    // Prepare rows for rendering
+    $entityViewBuilder = \Drupal::entityTypeManager()->getViewBuilder('node');
+    foreach ($variables['rows'] as &$row) {
+      if (isset($row['#node'])) {
+        $row['#node'] = $entityViewBuilder->view($row['#node'], $row['#view_mode']);
+      }
+    }
+  } elseif ($variables['view']->display_handler->getOption('row')['type'] === 'fields'){
+    $variables['row_mode'] = 'fields';
+  }
+    
+}
+
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for views templates.
+ */
+function bt_carousel_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+  $view = $variables['view'];
+  if ($view->style_plugin instanceof \Drupal\bt_carousel\Plugin\views\style\BootstrapToolboxCarouselViewStyle) {
+    $suggestions[] = 'views_view__bt_carousel_view_style';
+  }
+}
+
+
+
+
+
+
+
+

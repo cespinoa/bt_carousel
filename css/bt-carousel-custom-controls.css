@@ -1,0 +1,10 @@
+/* ---------- Hover effect in carousel controls  ---------- */
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon {
+  background-color: var(--bs-link-color);
+  border-radius: 50%;
+  padding: 10px;
+}
+
+

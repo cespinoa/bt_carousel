@@ -1,0 +1,17 @@
+.carousel-indicators button.thumbnail {
+  width: auto;
+}
+.carousel-indicators button.thumbnail:not(.active) {
+  opacity: 0.7;
+}
+.carousel-indicators {
+  position: static!important;
+}
+/*
+@media screen and (min-width: 992px) {
+  .carousel {
+    max-width: 70%;
+    margin: 0 auto;
+  }
+}
+*/

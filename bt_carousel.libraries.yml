@@ -1,0 +1,31 @@
+bt_carousel:
+  version: 1.x
+  css:
+    theme:
+      https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js: {}
+
+
+bt_carousel_full_screen:
+  version: 1.x
+  css:
+    theme:
+      css/bt-carousel-full-screen.css: { weight: 9999 }
+  js:
+    js/bt-carousel-full-screen.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+custom-controls:
+  version: 1.x
+  css:
+    theme:
+      css/bt-carousel-custom-controls.css: { weight: 200 }
+
+thumbnails:
+  version: 1.x
+  css:
+    theme:
+      css/bt-carousel-thumbnails.css: { weight: 9999 }
