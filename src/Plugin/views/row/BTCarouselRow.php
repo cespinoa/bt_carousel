@@ -48,7 +48,7 @@ class BTCarouselRow extends RowPluginBase {
 
     $options = $this->view->style_plugin->options;
     
-    
+    $output = [];
 
     $entity = $row->_entity;
     $viewField = $this->view->field;
@@ -66,7 +66,7 @@ class BTCarouselRow extends RowPluginBase {
     $fieldBody = $options['carousel_text'] != 'none' ? $options['carousel_text'] : NULL;
     if($fieldBody){
       $value = $entity->get($fieldBody)->value;
-      $value = text_summary($value, NULL, 200);
+      $value = text_summary($value ?? '', NULL, 200);
       $class = $viewField[$fieldBody]->elementClasses($row);
       $element = $viewField[$fieldBody]->elementType();
       $output['body'] = $this->createRenderArrayBody($value, $class, $element);
@@ -83,16 +83,16 @@ class BTCarouselRow extends RowPluginBase {
     $fieldImage = $options['carousel_image'] != 'none' ? $options['carousel_image'] : NULL;
     if($fieldImage){
       $fieldOptions = $viewField[$fieldImage]->options;
-      $view_mode = $fieldOptions['settings']['view_mode'];
+      $viewMode = $fieldOptions['settings']['view_mode'];
       $class = $viewField[$fieldImage]->elementClasses($row);
       $field = $entity->get($fieldImage);
       if (!$field->isEmpty()) {
-        $media_entity = $field->entity;
-        $rendered_entity = \Drupal::entityTypeManager()
+        $mediaEntity = $field->entity;
+        $renderedEntity = \Drupal::entityTypeManager()
             ->getViewBuilder('media')
-            ->view($media_entity, $view_mode);
-        $rendered_entity['#attributes'] = ['class' => [$class]];
-        $output['image'] = $rendered_entity;
+            ->view($mediaEntity, $viewMode);
+        $renderedEntity['#attributes'] = ['class' => [$class]];
+        $output['image'] = $renderedEntity;
       }
     }
     

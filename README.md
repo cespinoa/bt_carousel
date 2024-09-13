@@ -72,7 +72,8 @@ themes/custom/my_theme/templates/```
 
 ## Contributing
 
-Contributions, bug reports, and feature requests are welcome on the project page on [Drupal.org](https://www.drupal.org).
+Contributions, bug reports, and feature requests are welcome on the project page on
+ [Drupal.org](https://www.drupal.org).
 
 ## Maintenance
 

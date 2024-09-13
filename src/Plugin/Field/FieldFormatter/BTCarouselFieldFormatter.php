@@ -107,7 +107,7 @@ final class BTCarouselFieldFormatter extends FormatterBase {
    *   The entity display repository.
    * @param Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
    *   The entity field manager
-   * @param \Drupal\bootstrap_toolbox\UtilityServiceInterface $utilityservice
+   * @param \Drupal\bootstrap_toolbox\UtilityServiceInterface $utilityService
    *    Custom services
    */
   public function __construct(
@@ -121,13 +121,13 @@ final class BTCarouselFieldFormatter extends FormatterBase {
     EntityTypeManagerInterface $entityTypeManager,
     //~ EntityDisplayRepositoryInterface $entityDisplayRepository,
     //~ EntityFieldManagerInterface $entity_field_manager,
-    UtilityServiceInterface $utilityservice
+    UtilityServiceInterface $utilityService
     ){
     parent::__construct($pluginid, $pluginDefinition, $fieldDefinition, $settings, $label, $viewMode, $thirdPartySettings);
     $this->entityTypeManager = $entityTypeManager;
     //~ $this->entityDisplayRepository = $entityDisplayRepository;
     //~ $this->entityFieldManager = $entity_field_manager;
-    $this->utilityService = $utilityservice;
+    $this->utilityService = $utilityService;
   }
 
   /**
@@ -469,7 +469,7 @@ final class BTCarouselFieldFormatter extends FormatterBase {
       '#title' => $this->t('Show thumbnails'),
       '#default_value' => $this->getSetting('show_thumbnails'),
     ];
-    //~ kint($targetType);
+    
     if ($targetType != 'media'){
       $form['thumbnail_field'] = [
         '#type' => 'select',
@@ -509,7 +509,7 @@ final class BTCarouselFieldFormatter extends FormatterBase {
   public function settingsSummary() {
     $summary = [];
     $viewMode = $this->getSetting('view_mode');
-    //~ kint($this->getSettings());
+    
     if($viewMode == 'use_fields'){
       $fieldImage = $this->getSetting('image_field') ?? NULL;
       $fieldTitle = $this->getSetting('title_field') ?? NULL;
@@ -579,6 +579,14 @@ final class BTCarouselFieldFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode): array {
+    if(!$items->count()){
+      return [];
+    }
+
+    /**
+     * Falta aplicar los estilos de Bootstrap Tooolbox
+     * */
+    
     $elements = [];
     $config = \Drupal::config('bt_carousel.settings');
     $selectedLibrary = $config->get('selected_library');
@@ -591,8 +599,8 @@ final class BTCarouselFieldFormatter extends FormatterBase {
 
     $viewMode = $this->getSetting('view_mode');
     
-    
     if ( $viewMode === 'use_image') {
+      
       $imageStyle = $this->getSetting('image_style');
       $images = [];
       $showThumbnails = $this->getSetting('show_thumbnails') ?? NULL;
@@ -600,51 +608,33 @@ final class BTCarouselFieldFormatter extends FormatterBase {
         $thumbnailStyle = $this->getSetting('thumbnail_style');
         $thumbnails = [];
       }
-      foreach ($items as $delta => $item) {
-        $media = Media::load($item->target_id);
-        
-        if ($media instanceof MediaInterface && $media->bundle() === 'image') {
-          $imageField = $media->get('field_media_image');
 
-          if (!$imageField->isEmpty()) {
-            $uri = $imageField->entity->getFileUri();
-            
-            if ($imageStyle !== 'default') {
-              $uri = ImageStyle::load($imageStyle)->buildUri($uri);
-            }
-            
-            $images[] = [
-              'uri' => $uri,
-              'alt' => $item->alt,
-            ];
-          }
-          if($showThumbnails){
-            $thumbnails[] = [
-              'uri' => ImageStyle::load($imageStyle)->buildUri($imageField->entity->getFileUri()),
-            ];
-          }
+      foreach ($items as $delta => $item) {
+        $images[] = $this->utilityService->getMediaFileDataByMediaIdAndImageStyle($item->target_id,$imageStyle);
+        if($showThumbnails){
+          $thumbnails[] = $this->utilityService->getMediaUrlByMediaIdAndImageStyle($item->target_id,$thumbnailStyle);
         }
       }
       
-      $elements[] = [
+      $elements = [
         '#theme' => 'bt_media_images_carousel',
-        '#variables' => [
-          'images' => $images,
-          'thumbnails' => $thumbnails,
-          'carousel_id' => $carouselId,
-          'settings' => $this->getSettings(),
-        ],
+        '#images' => $images,
+        '#thumbnails' => $thumbnails,
+        '#carousel_id' => $carouselId,
+        '#settings' => $this->getSettings(),
         '#attached' => [
           'library' => [
             $selectedLibrary,
           ],
         ],
       ];
+      
       if ($this->getSetting('show_full_screen')) {
         $elements['#attached']['drupalSettings']['bt_carousel']['carousel_id'] = $carouselId;
         $elements['#attached']['drupalSettings']['bt_carousel']['interval'] = $this->getSetting('interval');
         $elements['#attached']['library'][] = 'bt_carousel/bt_carousel_full_screen';
       }
+      return $elements;
       
     } elseif ( $viewMode === 'use_fields'){
         $entityType = $this->fieldDefinition->getSetting('target_type');
@@ -653,7 +643,7 @@ final class BTCarouselFieldFormatter extends FormatterBase {
         $fieldText = $settings['text_field'];
         $imageStyle = $settings['image_field_style'];
         $thumbnailStyle = $settings['thumbnail_style'];
-        $text_field_lenght = $settings['text_field_lenght'];
+        $textFieldLenght = $settings['text_field_lenght'];
         $showThumbnails = $settings['show_thumbnails'];
 
         $settings['text_area_style'] = $this->utilityService->getStyleById($settings['text_area_style']);
@@ -668,17 +658,17 @@ final class BTCarouselFieldFormatter extends FormatterBase {
           $mediaId = $entity->get($fieldMedia)->target_id;
           $title = $entity->get($fieldTitle)->value;
           $text = $entity->get($fieldText)->value;
-          $text = text_summary($text, NULL, $text_field_lenght);
+          $text = text_summary($text ?? '', NULL, $textFieldLenght);
           $mediaUri = $this->utilityService->getMediaUriByMediaIdAndImageStyle($mediaId, $imageStyle);
           $link = NULL;
           if($settings['add_link']){
             $url = $entity->toUrl();
-            $link_attributes = [
+            $linkAttributes = [
               'class' => $settings['text_link_style'],
             ];
-            $link = Link::fromTextAndUrl($settings['text_link'], $url->setOptions(['attributes' => $link_attributes]));
+            $link = Link::fromTextAndUrl($settings['text_link'], $url->setOptions(['attributes' => $linkAttributes]));
             $link = $link->toRenderable();
-            //~ kint(get_class_methods($link));
+            
           }
           $slides[] = [
             'image' => $mediaUri,
@@ -724,7 +714,7 @@ final class BTCarouselFieldFormatter extends FormatterBase {
       $imageStyle = $settings['thumbnail_style'] ?? FALSE;
       
       foreach ($items as $delta => $item) {
-        $entities[$delta] = $this->utilityService->getRenderedEntity($entityType, $viewMode, $item->target_id);
+        $entities[$delta] = $this->utilityService->getEntityRenderArray($entityType, $viewMode, $item->target_id);
         if($showThumbnails){
           if($entityType == 'media' && $bundle == 'image'){
             $mediaId = $item->target_id;
@@ -745,9 +735,9 @@ final class BTCarouselFieldFormatter extends FormatterBase {
           }elseif($targetId){
             $file = File::load($targetId);
             if ($file) {
-              $file_uri = $file->getFileUri();
+              $fileUri = $file->getFileUri();
               $thumbnails[] = [
-                'uri' => $file_uri,
+                'uri' => $fileUri,
               ];
             }
           }

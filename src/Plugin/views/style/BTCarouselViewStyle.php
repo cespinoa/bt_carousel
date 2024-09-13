@@ -18,7 +18,7 @@ use Drupal\views\Plugin\views\style\StylePluginBase;
  *   display_types = {"normal"},
  * )
  */
-final class BootstrapToolboxCarouselViewStyle extends StylePluginBase {
+final class BTCarouselViewStyle extends StylePluginBase {
 
   // Default values for options.
   private const DEFAULT_SHOW_INDICATORS = TRUE;
@@ -64,7 +64,7 @@ final class BootstrapToolboxCarouselViewStyle extends StylePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function buildOptionsForm(&$form, FormStateInterface $formstate): void {
+  public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
     $form['show_indicators'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Show indicators'),
@@ -101,8 +101,8 @@ final class BootstrapToolboxCarouselViewStyle extends StylePluginBase {
 
 
     // Check if the view is configured to show fields instead of content.
-    $style_options = $this->displayHandler->getOption('row');
-    if (isset($style_options['type']) && $style_options['type'] === 'bt_carousel_row') {
+    $styleOptions = $this->displayHandler->getOption('row');
+    if (isset($styleOptions['type']) && $styleOptions['type'] === 'bt_carousel_row') {
       
       // Retrieve the fields available in the view.
       $fields = $this->displayHandler->getOption('fields');
@@ -171,17 +171,17 @@ final class BootstrapToolboxCarouselViewStyle extends StylePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $formstate): void {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     // Validate interval.
-    $interval = $formstate->getValue(['style_options', 'interval']);
+    $interval = $form_state->getValue(['style_options', 'interval']);
     if (!is_numeric($interval) || $interval <= 0) {
-      $formstate->setErrorByName('interval', $this->t('The interval must be a positive number.'));
+      $form_state->setErrorByName('interval', $this->t('The interval must be a positive number.'));
     }
 
     // Save the validated values.
-    $this->options['show_indicators'] = $formstate->getValue(['style_options', 'show_indicators']);
-    $this->options['show_controls'] = $formstate->getValue(['style_options', 'show_controls']);
-    $this->options['interval'] = $formstate->getValue(['style_options', 'interval']);
+    $this->options['show_indicators'] = $form_state->getValue(['style_options', 'show_indicators']);
+    $this->options['show_controls'] = $form_state->getValue(['style_options', 'show_controls']);
+    $this->options['interval'] = $form_state->getValue(['style_options', 'interval']);
   }
 
 }

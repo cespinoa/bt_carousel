@@ -53,18 +53,18 @@ function bt_carousel_theme() {
  */
 function template_preprocess_views_view_bt_carousel_view_style(array &$variables): void {
   $config = \Drupal::config('bt_carousel.settings');
-  $selected_library = $config->get('selected_library');
   $variables['carousel_id'] = \Drupal\Component\Utility\Html::getId('carousel-' . uniqid());
   $variables['#attached']['library'][] = 'bt_carousel/bt_carousel';
 
   $view = $variables['view'];
   $rows = $variables['rows'];
 
-  if ($view && $view->style_plugin instanceof \Drupal\bt_carousel\Plugin\views\style\BootstrapToolboxCarouselViewStyle) {
+  if ($view && $view->style_plugin instanceof \Drupal\bt_carousel\Plugin\views\style\BTCarouselViewStyle) {
     $variables['options'] = $view->style_plugin->options;
     $variables['dark_mode'] = $view->style_plugin->options['dark_mode'] ? 'carousel-dark' : '';
     $variables['fade_effect'] = $view->style_plugin->options['fade_effect'] ? 'carousel-fade' : '';
   }
+  
   
   if($variables['view']->display_handler->getOption('row')['type'] === 'bt_carousel_row'){
     $variables['row_mode'] = 'bt_carousel_row';
@@ -93,7 +93,6 @@ function bt_carousel_theme_suggestions_views_view_alter(array &$suggestions, arr
     $suggestions[] = 'views_view__bt_carousel_view_style';
   }
 }
-
 
 
 

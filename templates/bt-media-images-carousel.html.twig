@@ -24,7 +24,7 @@
     {% for image in images %}
     
       <div class="carousel-item{% if loop.first %} active{% endif %}">
-        <img src="{{ file_url(image.uri) }}" alt="{{ image.alt }}" class="d-block w-100">
+        <img src="{{ image.url }}" alt="{{ image.alt }}" class="d-block w-100">
         {% if settings.show_alt_text %}
           <div class="carousel-caption d-none d-md-block">
             <p>{{ image.alt }}</p>
