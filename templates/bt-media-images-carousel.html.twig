@@ -9,41 +9,44 @@
  * - settings: Show controls, show indictors, interval settings.
  */
 #}
-<div id="{{ carousel_id }}" class="carousel slide" data-bs-ride="carousel" data-bs-interval={{ settings.interval }}>
+
+{% if settings.bootstrap_version == 3 %}
+  {% import '@bt_carousel/templates/macros/_media-images-bootstrap-3.html.twig' as macros %}
+  <div id="{{ carousel_id }}" class="carousel slide carousel-fade carousel-bootstrap-3" data-ride="carousel">
+
+{% elseif settings.bootstrap_version == 4 %}
+  {% import '@bt_carousel/templates/macros/_media-images-bootstrap-4.html.twig' as macros %}
+  <div id="{{ carousel_id }}" class="carousel slide {{ settings.carousel_fade }} carousel-bootstrap-4" data-ride="carousel" data-interval={{ settings.interval }}>
   
-  {% if settings.show_indicators %}
-    <div class="carousel-indicators">
-      {% for image in images %}
-        <button type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.first %} active{% endif %}" aria-current="true" aria-label="Slide {{ loop.index0 }}"></button>
-      {% endfor %}
-    </div>
-  {% endif %}
-  
-  <div class="carousel-inner">
+{% else %}
+  {% import '@bt_carousel/templates/macros/_media-images-bootstrap-5.html.twig' as macros %}
+  <div id="{{ carousel_id }}" class="carousel slide {{ settings.carousel_fade }} {{ settings.carousel_dark }}" data-bs-ride="carousel" data-bs-interval={{ settings.interval }}>
+{% endif %}    
     
-    {% for image in images %}
-    
-      <div class="carousel-item{% if loop.first %} active{% endif %}">
-        <img src="{{ image.url }}" alt="{{ image.alt }}" class="d-block w-100">
-        {% if settings.show_alt_text %}
-          <div class="carousel-caption d-none d-md-block">
-            <p>{{ image.alt }}</p>
-          </div>
-        {% endif %}
-      </div>
-    {% endfor %}
-    
-  </div>
-  
-  {% if settings.show_controls %}
-    <button class="carousel-control-prev" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  {% endif %}
+    {% if settings.show_indicators and not settings.show_thumbnails %}
+      {% set carousel_indicators = 'carousel-indicators' %}
+      {{ macros.render_carousel_indicators(carousel_id, images, thumbnails, settings, carousel_indicators) }}
       
-</div>
+    {% endif %}
+
+    {{ macros.render_carousel_inner(settings, images) }}
+
+    {% if settings.show_controls %}
+
+      {{ macros.render_carousel_controls(carousel_id) }}
+
+    {% endif %}
+
+    {% if settings.show_indicators and settings.show_thumbnails == true %}
+      {% set carousel_indicators = 'carousel-images-indicators' %}
+      {{ macros.render_carousel_indicators(carousel_id, images, thumbnails, settings, carousel_indicators) }}
+      
+    {% endif %}
+        
+  </div>
+
+
+{% if settings.show_indicators and settings.show_thumbnails %}
+  {{ attach_library('bt_carousel/thumbnails') }}
+  <div class="clearfix w-100 mb-5 pb-5"></div> 
+{% endif %}

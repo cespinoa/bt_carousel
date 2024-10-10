@@ -89,7 +89,7 @@ function template_preprocess_views_view_bt_carousel_view_style(array &$variables
  */
 function bt_carousel_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
   $view = $variables['view'];
-  if ($view->style_plugin instanceof \Drupal\bt_carousel\Plugin\views\style\BootstrapToolboxCarouselViewStyle) {
+  if ($view->style_plugin instanceof \Drupal\bt_carousel\Plugin\views\style\BTCarouselViewStyle) {
     $suggestions[] = 'views_view__bt_carousel_view_style';
   }
 }

@@ -1,0 +1,39 @@
+{# templates/macros/_entities-bootstrap-5.html.twig #}
+
+{% macro render_carousel_inner(settings, entities) %}
+  <div class="carousel-inner">
+      
+      {% for entity in entities %}
+        <div class="carousel-item{% if loop.first %} active{% endif %}">
+          {{ entity }}
+        </div>
+      {% endfor %}
+      
+    </div>
+{% endmacro %}
+
+
+{% macro render_carousel_controls(carousel_id) %}
+  <button class="carousel-control-prev" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+{% endmacro %}
+
+
+{% macro render_carousel_indicators(carousel_id, entities, thumbnails, settings, carousel_indicators) %}
+  <div class="carousel-indicators">
+    {% for entity in entities %}
+      <button type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide-to="{{ loop.index0 }}"
+        class="{% if loop.first %} active{% endif %} {% if thumbnails %} thumbnail{% endif %}" aria-current="true" aria-label="Slide {{ loop.index0 }}">
+        {% if thumbnails %}
+          <img src="{{ file_url(thumbnails[loop.index0].uri) }}" class="d-block w-100">
+        {% endif %}
+      </button>
+    {% endfor %}
+  </div>
+{% endmacro %}

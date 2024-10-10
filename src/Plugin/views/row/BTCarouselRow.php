@@ -5,6 +5,8 @@ namespace Drupal\bt_carousel\Plugin\views\row;
 use Drupal\views\Plugin\views\row\RowPluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Unicode;
+use Drupal\bootstrap_toolbox\UtilityServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin de fila personalizado para mostrar los resultados de la vista.
@@ -21,7 +23,35 @@ use Drupal\Component\Utility\Unicode;
 class BTCarouselRow extends RowPluginBase {
 
     
+/**
+   * The utility service
+   *
+   * @var \Drupal\bootstrap_toolbox\UtilityServiceInterface
+   */
+  protected $utilityService;
 
+  /**
+   * BTCarouselRow constructor.
+   *
+   * @param \Drupal\bootstrap_toolbox\UtilityServiceInterface $utilityService
+   *   El servicio UtilityService.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, UtilityServiceInterface $utilityService) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->utilityService = $utilityService;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('bootstrap_toolbox.utility_service')
+    );
+  }
 
   /**
    * Provide a form for setting options.
@@ -50,13 +80,16 @@ class BTCarouselRow extends RowPluginBase {
     
     $output = [];
 
+    /** @var \Drupal\views\ResultRow $row */
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity*/
     $entity = $row->_entity;
+    
     $viewField = $this->view->field;
 
     $fieldTitle = $options['carousel_title'] != 'none' ? $options['carousel_title'] : NULL;
     if($fieldTitle){
       $value = $entity->get($fieldTitle)->value;
-      $class = $viewField[$fieldTitle]->elementClasses($row);
+      $class = $viewField[$fieldTitle]->elementClasses($row->index);
       $element = $viewField[$fieldTitle]->elementType();
       $linkToEntity = $viewField[$fieldTitle]->options['settings']['link_to_entity'];
       $entityUrl = $entity->toUrl();
@@ -67,7 +100,7 @@ class BTCarouselRow extends RowPluginBase {
     if($fieldBody){
       $value = $entity->get($fieldBody)->value;
       $value = text_summary($value ?? '', NULL, 200);
-      $class = $viewField[$fieldBody]->elementClasses($row);
+      $class = $viewField[$fieldBody]->elementClasses($row->index);
       $element = $viewField[$fieldBody]->elementType();
       $output['body'] = $this->createRenderArrayBody($value, $class, $element);
     }
@@ -76,7 +109,7 @@ class BTCarouselRow extends RowPluginBase {
     if($fieldLink){
       $url = $entity->toUrl()->toString();
       $value = $viewField[$fieldLink]->original_value;
-      $class = $viewField[$fieldLink]->elementClasses($row);
+      $class = $viewField[$fieldLink]->elementClasses($row->index);
       $output['link'] = $this->createRenderArrayLink($value, $class, $url);
     }
     
@@ -84,15 +117,18 @@ class BTCarouselRow extends RowPluginBase {
     if($fieldImage){
       $fieldOptions = $viewField[$fieldImage]->options;
       $viewMode = $fieldOptions['settings']['view_mode'];
-      $class = $viewField[$fieldImage]->elementClasses($row);
+      $class = $viewField[$fieldImage]->elementClasses($row->index);
       $field = $entity->get($fieldImage);
       if (!$field->isEmpty()) {
         $mediaEntity = $field->entity;
-        $renderedEntity = \Drupal::entityTypeManager()
-            ->getViewBuilder('media')
-            ->view($mediaEntity, $viewMode);
-        $renderedEntity['#attributes'] = ['class' => [$class]];
-        $output['image'] = $renderedEntity;
+        $mediaId = $mediaEntity->id();
+        if ($mediaId) {
+          $mediaId = (string) $mediaId;
+          $renderedEntity = $this->utilityService->getEntityRenderArray('media', $viewMode,  $mediaId);
+          $renderedEntity['#attributes'] = ['class' => [$class]];
+          $output['image'] = $renderedEntity;          
+        }
+
       }
     }
     
@@ -104,7 +140,7 @@ class BTCarouselRow extends RowPluginBase {
    * @param string $class
    * @param string $element
    * @param string $linkToEntity
-   * @param string $entityUrl
+   * @param object $entityUrl
    *
    * @return array
    *
